@@ -2,15 +2,21 @@ import {
   Bookmark,
   Calendar,
   Compass,
+  Menu,
   PlusCircle,
   Search,
   Sparkles,
   User,
+  X,
 } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
 function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  console.log(isMobileMenuOpen);
+
   return (
     <div className="sticky top-0 z-4 w-full bg-[#FAF9F5]/90 backdrop-blur-md border-b border-[#EBE8DF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-18">
@@ -94,7 +100,89 @@ function Navbar() {
             </span>
           </div>
         </div>
+
+        <div className="flex items-center md:hidden gap-2">
+          <Link to="/explore">
+            <button className="p-2 rounded-xl text-stone-700 hover:bg-black/5">
+              <Search className="w-5 h-5" />
+            </button>
+          </Link>
+          <button
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            className="p-2 rounded-xl text-stone-700 hover:bg-black/5"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+        </div>
       </div>
+
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-[#EBE8DF] bg-[#FAF9F5] px-4 pt-3 pb-6 space-y-4">
+          <form action="" className="relative">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search events, cities..."
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl bg-white border border-[#DDD9CE] outline-none"
+            />
+          </form>
+
+          <div className="flex flex-col gap-1">
+            <Link
+              to="/explore"
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-stone-800 hover:bg-black/5"
+            >
+              <div className="flex items-center gap-3">
+                <Compass className="w-4 h-4 text-stone-500" /> Explore Events
+              </div>
+            </Link>
+
+            <Link
+              to="/schedule"
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-stone-800 hover:bg-black/5"
+            >
+              <div className="flex items-center gap-3">
+                <Calendar className="w-4 h-4 text-stone-500" /> My Schedule
+              </div>
+            </Link>
+
+            <Link
+              to="/favorites"
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-stone-800 hover:bg-black/5"
+            >
+              <div className="flex items-center gap-3">
+                <Bookmark className="w-4 h-4 text-stone-500" /> Saved Events
+              </div>
+            </Link>
+
+            <Link
+              to="/profile"
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-stone-800 hover:bg-black/5"
+            >
+              <div className="flex items-center gap-3">
+                <User className="w-4 h-4 text-stone-500" /> Member Profile
+              </div>
+            </Link>
+
+            <Link
+              to="/create-event"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#E65100] hover:bg-orange-50"
+            >
+              <PlusCircle className="w-4 h-4" /> Host an Event
+            </Link>
+          </div>
+          
+          <div className="pt-2 flex flex-col gap-2">
+            <div className="w-full py-2.5 px-4 text-xs font-semibold rounded-xl bg-stone-100 text-stone-600 border border-[#DDD9CE] text-center select-none shadow-xs">
+              Sign In & Sign Up — Coming Soon
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
