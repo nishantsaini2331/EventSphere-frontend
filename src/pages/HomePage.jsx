@@ -1,9 +1,11 @@
+import FeaturedCarousel from "@/components/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
-import { Compass, Sparkles } from "lucide-react";
-import React from "react";
+import { ChevronRight, Compass, Flame, Sparkles } from "lucide-react";
+import React, { useState } from "react";
 import { Link } from "react-router";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="space-y-16 pb-20">
       <section className="relative pt-12 pb-6 sm:pt-16 sm:pb-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,6 +47,28 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between pb-4">
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-[#E65100]" />
+            <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+              Curated Spotlight
+            </h2>
+          </div>
+          <Link
+            to="/explore"
+            className="text-xs font-semibold text-[#E65100] hover:underline flex items-center gap-1"
+          >
+            Browse all <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {isLoading ? (
+          <div className="aspect-21/9 rounded-3xl bg-[#EBE8DF]/50 animate-pulse"></div>
+        ) : (
+          <FeaturedCarousel />
+        )}
       </section>
     </div>
   );
