@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import NotFound from "./pages/NotFound";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
@@ -9,7 +10,7 @@ function App() {
       <Navbar />
       <div className="flex-1">
         <Routes>
-          <Route path="/" element={<h1>Home</h1>} />
+          <Route path="/" element={<HomePage/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
