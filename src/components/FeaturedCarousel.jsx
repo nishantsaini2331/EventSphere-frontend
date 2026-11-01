@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Button } from "./ui/button";
@@ -14,6 +14,7 @@ import { Link } from "react-router";
 import { Badge } from "./ui/badge";
 
 function FeaturedCarousel({ events }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({
       delay: 4000,
@@ -32,8 +33,13 @@ function FeaturedCarousel({ events }) {
     emblaApi.plugins().autoplay.reset();
   };
 
+  const scrollTo = (i) => {
+    emblaApi.scrollTo(i);
+  }
+
   useEffect(() => {
     if (!emblaApi) return;
+    emblaApi.on("select", () => setSelectedIndex(emblaApi.selectedScrollSnap()));
   }, [emblaApi]);
   return (
     <div className="relative group">
@@ -156,7 +162,19 @@ function FeaturedCarousel({ events }) {
         <ChevronRight className="w-6 h-6" />
       </button>
 
-      
+      <div className="absolute bottom-4 right-6 flex items-center gap-2 z-20">
+        {events.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollTo(i)}
+            className={`transition-all rounded-full ${
+              i === selectedIndex
+                ? "w-6 h-2 bg-[#E65100]"
+                : "w-2 h-2 bg-white/50 hover:bg-white/80"
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 }

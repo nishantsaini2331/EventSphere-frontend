@@ -92,6 +92,8 @@ export default function Home() {
           <FeaturedCarousel events={featuredEvents} />
         )}
       </section>
+
+      
     </div>
   );
 }
