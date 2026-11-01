@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { Badge } from "./ui/badge";
+import { formatEventDate, formatPrice } from "@/lib/utils";
 
 function FeaturedCarousel({ events }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -35,11 +36,13 @@ function FeaturedCarousel({ events }) {
 
   const scrollTo = (i) => {
     emblaApi.scrollTo(i);
-  }
+  };
 
   useEffect(() => {
     if (!emblaApi) return;
-    emblaApi.on("select", () => setSelectedIndex(emblaApi.selectedScrollSnap()));
+    emblaApi.on("select", () =>
+      setSelectedIndex(emblaApi.selectedScrollSnap()),
+    );
   }, [emblaApi]);
   return (
     <div className="relative group">
@@ -105,16 +108,14 @@ function FeaturedCarousel({ events }) {
                     <div className="flex items-center gap-5 pt-2 text-xs sm:text-sm text-stone-300 font-medium flex-wrap">
                       <span className="flex items-center gap-1.5 text-orange-300 font-semibold">
                         <Calendar className="w-4 h-4" />
-                        {/* {formatEventDate(event.startDate)} */}
-                        {event.startDate}
+                        {formatEventDate(event.startDate)}
                       </span>
                       <span className="flex items-center gap-1.5 text-stone-300">
                         <MapPin className="w-4 h-4 text-stone-400" />
                         {event.venue}, {event.city}
                       </span>
                       <span className="flex items-center gap-1.5 font-bold text-white bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
-                        {/* {formatPrice(event.price, event.currency)} */}
-                        {event.price}
+                        {formatPrice(event.price, event.currency)}
                       </span>
                     </div>
 
