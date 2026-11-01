@@ -15,15 +15,25 @@ import { Badge } from "./ui/badge";
 
 function FeaturedCarousel({ events }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
-    Autoplay({ delay: 4000, stopOnInteraction: true  , stopOnMouseEnter : true}),
+    Autoplay({
+      delay: 4000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+      rootNode: (emblaRoot) => emblaRoot.parentElement,
+    }),
   ]);
 
-  const goToPrev = () => emblaApi?.scrollPrev();
-  const goToNext = () => emblaApi?.scrollNext();
+  const goToPrev = () => {
+    emblaApi?.scrollPrev();
+    emblaApi.plugins().autoplay.reset();
+  };
+  const goToNext = () => {
+    emblaApi?.scrollNext();
+    emblaApi.plugins().autoplay.reset();
+  };
 
   useEffect(() => {
     if (!emblaApi) return;
-    emblaApi.plugins().autoplay?.play();
   }, [emblaApi]);
   return (
     <div className="relative group">
@@ -145,6 +155,8 @@ function FeaturedCarousel({ events }) {
       >
         <ChevronRight className="w-6 h-6" />
       </button>
+
+      
     </div>
   );
 }
