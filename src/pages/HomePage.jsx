@@ -9,6 +9,7 @@ import {
   Cpu,
   Flame,
   GraduationCap,
+  MapPin,
   Music,
   Palette,
   Sparkles,
@@ -77,6 +78,29 @@ function getCategoryColor(i) {
   return colors[i % colors.length];
 }
 
+const HUB_CITIES = [
+  {
+    name: "Bengaluru",
+    label: "Tech & Acoustic Nights",
+    img: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    name: "Mumbai",
+    label: "Indie Festivals & Art",
+    img: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    name: "Delhi NCR",
+    label: "Conclaves & Founder Pitch",
+    img: "https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    name: "Pune",
+    label: "Heritage & Code Labs",
+    img: "https://images.unsplash.com/photo-1627916607164-7b20241db935?auto=format&fit=crop&w=500&q=80",
+  },
+];
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -110,7 +134,6 @@ export default function Home() {
 
   return (
     <div className="space-y-16 pb-20">
-
       <section className="relative pt-12 pb-6 sm:pt-16 sm:pb-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8 pb-10 border-b border-[#EBE8DF]">
           <div className="max-w-2xl space-y-4">
@@ -237,6 +260,42 @@ export default function Home() {
         )}
       </section>
 
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+        <div>
+          <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+            Explore by Community Hub
+          </h2>
+          <p className="text-xs text-stone-500">
+            Vibrant hubs where local conclaves thrive
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {HUB_CITIES.map((c) => (
+            <Link
+              to="/explore"
+              className="group relative rounded-2xl overflow-hidden aspect-4/3 bg-stone-900 shadow-subtle border border-[#EBE8DF]"
+            >
+              <img
+                src={c.img}
+                alt={c.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <div className="flex items-center gap-1.5 text-orange-400 text-xs font-semibold">
+                  <MapPin />
+                  <span>{c.name}</span>
+                </div>
+                <p className="text-xs text-stone-300 font-medium mt-0.5">
+                  {c.label}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#1C1B18] text-white rounded-3xl p-8 sm:p-12 border border-[#33312B] flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="max-w-xl space-y-3">
@@ -247,7 +306,9 @@ export default function Home() {
               Host your next summit, workshop or indie showcase on EventSphere.
             </h2>
             <p className="text-sm text-stone-300 leading-relaxed">
-              Every registered user can organize events. Enjoy seamless ticketing, automatic calendar syncing, verified attendee reviews, and real-time dashboard analytics.
+              Every registered user can organize events. Enjoy seamless
+              ticketing, automatic calendar syncing, verified attendee reviews,
+              and real-time dashboard analytics.
             </p>
           </div>
 
