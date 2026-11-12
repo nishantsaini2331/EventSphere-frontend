@@ -4,6 +4,7 @@ import Navbar from "./components/common/Navbar";
 import NotFound from "./pages/NotFound";
 import HomePage from "./pages/HomePage";
 import { useEffect } from "react";
+import EventDetailsPage from "./pages/EventDetailsPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation(); 
@@ -20,6 +21,7 @@ function App() {
       <div className="flex-1">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/events/:slug" element={<EventDetailsPage/>}/>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
