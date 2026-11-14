@@ -14,7 +14,6 @@ import {
   MapPin,
   Share2,
   ShieldCheck,
-  Sparkle,
   Sparkles,
   Users,
 } from "lucide-react";
