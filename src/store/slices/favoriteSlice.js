@@ -6,7 +6,7 @@ const favoriteSlice = createSlice({
     items: JSON.parse(localStorage.getItem("eventsphere-favorites")) || [],
   },
   reducers: {
-    toggleFavorites(state, action) {
+    toggleFavorite(state, action) {
       const event = action.payload;
       const existingEvent = state.items.find(
         (e) => (e.id || e._id) === (event.id || event._id),
@@ -24,7 +24,7 @@ const favoriteSlice = createSlice({
         JSON.stringify(state.items),
       );
     },
-    removeFavorites(state) {},
+    removeFavorite(state) {},
     clearFavorties(state) {
       state.items = [];
       localStorage.clear("eventsphere-favorites");
