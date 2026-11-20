@@ -2,27 +2,59 @@ import Skeleton from "@/components/common/Skeleton";
 import EventCard from "@/components/events/EventCard";
 import api from "@/lib/axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useInView } from "react-intersection-observer";
 
 export default function ExplorePage() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+    hasMore: false,
+  });
 
-  async function fetchEvents() {
-    setIsLoading(true);
+  async function fetchEvents(page = 1, append = false) {
+    if (page === 1) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
     try {
-      const events = await api.get(
-        "https://eventsphere-server-mfdb.onrender.com/api/events",
+      const { data: events, pagination } = await api.get(
+        `/api/events?page=${page}`,
       );
-      setEvents(events);
+
+      if (append) {
+        setEvents((prev) => [...prev, ...events]);
+      } else {
+        setEvents(events);
+      }
+
+      setPagination(pagination);
     } catch (error) {}
 
     setIsLoading(false);
+    setIsLoadingMore(false);
   }
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(1, false);
   }, []);
+
+  const { ref: observerRef, inView } = useInView({
+    threshold: 0.5,
+  });
+
+  useEffect(() => {
+    if (inView && pagination.hasMore && !isLoading && !isLoadingMore) {
+      let timer = setTimeout(() => {
+        fetchEvents(pagination.page + 1, true);
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [inView]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-20">
@@ -278,11 +310,13 @@ export default function ExplorePage() {
           </div>
         )}
 
-        {/* Bottom indicator */}
-        <div className="py-6 flex justify-center">
-          <div className="flex items-center gap-2 text-xs text-stone-400">
-            <span>Showing all 4 results for this filter</span>
-          </div>
+        <div ref={observerRef} className="py-6 flex justify-center ">
+          {pagination.hasMore && (
+            <div className="flex items-center gap-2 text-xs text-stone-500">
+              <span className="w-4 h-4 border-2 border-[#E65100] border-t-transparent rounded-full animate-spin" />
+              <span>Unfolding more community gatherings...</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
