@@ -32,7 +32,7 @@ const favoriteSlice = createSlice({
   },
 });
 
-export const { toggleFavorites, removeFavorites, clearFavorties } =
+export const { toggleFavorite, removeFavorites, clearFavorties } =
   favoriteSlice.actions;
 
 export default favoriteSlice.reducer; // connect with store
