@@ -1,4 +1,4 @@
-import { setFormat } from "@/store/slices/filterSlice";
+import { setIsPaid, setFormat } from "@/store/slices/filterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router";
 
@@ -8,15 +8,26 @@ export default function EventFilterBar() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
+  function updateParams(updates) {
+    const params = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, val]) => {
+      if (val !== undefined && val !== "" && val !== null) {
+        params.set(key, String(val));
+      } else {
+        params.delete(key);
+      }
+    });
+    setSearchParams(params);
+  }
+
   function handleFormatChange(format) {
     dispatch(setFormat(format));
-    const params = new URLSearchParams();
-    if (format) {
-      params.set("format", format);
-    } else {
-      params.delete("format");
-    }
-    setSearchParams(params);
+    updateParams({ format });
+  }
+
+  function handleIsPaid(entry) {
+    dispatch(setIsPaid(entry));
+    updateParams({ isPaid: entry });
   }
 
   const activeFormat = searchParams.get("format") || filters.format;
@@ -223,22 +234,37 @@ export default function EventFilterBar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-stone-700">Admission:</span>
+          <span className="font-semibold text-stone-700">Entry:</span>
           <button
             type="button"
-            className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-stone-800 text-white border-stone-800"
+            onClick={() => handleIsPaid("")}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid ===  "" || null
+                ? "bg-stone-800 text-white border-stone-800"
+                : "bg-white border-[#DDD9CE] text-stone-600"
+            }`}
           >
             All
           </button>
           <button
+            onClick={() => handleIsPaid(false)} // isPaid = false
             type="button"
-            className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === false
+                ? "bg-emerald-700 text-white border-emerald-700"
+                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            }`}
           >
             Free
           </button>
           <button
+            onClick={() => handleIsPaid(true)} // isPaid = true
             type="button"
-            className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === true
+                ? "bg-stone-800 text-white border-stone-800"
+                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            }`}
           >
             Paid
           </button>
