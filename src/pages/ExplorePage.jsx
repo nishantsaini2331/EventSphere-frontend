@@ -1,6 +1,6 @@
 import Skeleton from "@/components/common/Skeleton";
-import EventCard from "@/components/events/EventCard";
-import EventFilterBar from "@/components/events/EventFilterBar";
+import EventCard from "@/components/events/EventCard";  
+import { EventFilterBar } from "@/components/events/EventFilterBar";
 import { useEventFilters } from "@/hooks/useEventFilters";
 import api from "@/lib/axios";
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +27,7 @@ export default function ExplorePage() {
     }
 
     let str = `${apiQueryString()}&page=${page}`;
-    
+
     try {
       const { data: events, pagination } = await api.get(`/api/events?${str}`);
 
