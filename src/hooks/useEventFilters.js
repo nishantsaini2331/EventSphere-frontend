@@ -12,6 +12,7 @@ export function useEventFilters() {
         isPaidParam === "true" ? true : isPaidParam === "false" ? false : "",
       category: searchParams.get("category") || "",
       search : searchParams.get("search") || "",
+      city : searchParams.get("city") || ""
     };
   }, [searchParams]);
 
@@ -41,6 +42,9 @@ export function useEventFilters() {
     }
     if (filters.search) {
       params.set("search", String(filters.search));
+    }
+    if (filters.city) {
+      params.set("city", String(filters.city));
     }
     return params.toString();
   }
