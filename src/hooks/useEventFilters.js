@@ -11,6 +11,7 @@ export function useEventFilters() {
       isPaid:
         isPaidParam === "true" ? true : isPaidParam === "false" ? false : "",
       category: searchParams.get("category") || "",
+      search : searchParams.get("search") || "",
     };
   }, [searchParams]);
 
@@ -37,6 +38,9 @@ export function useEventFilters() {
     }
     if (filters.category) {
       params.set("category", String(filters.category));
+    }
+    if (filters.search) {
+      params.set("search", String(filters.search));
     }
     return params.toString();
   }

@@ -1,11 +1,16 @@
+import { useDebounce } from "@/hooks/useDebounce";
 import { useEventFilters } from "@/hooks/useEventFilters";
 import api from "@/lib/axios";
-import { memo, useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import { memo, use, useEffect, useMemo, useState } from "react";
 
 export const EventFilterBar = memo(() => {
   const { updateParams, filters } = useEventFilters();
   const [categories, setCategories] = useState([]);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
+  const [searchVal, setSearchVal] = useState(filters.search);
+  const debouncedValue = useDebounce(searchVal, 350);
+  console.log({ searchVal, debouncedValue });
 
   function handleFormatChange(format) {
     updateParams({ format });
@@ -13,6 +18,11 @@ export const EventFilterBar = memo(() => {
 
   function handleIsPaid(entry) {
     updateParams({ isPaid: entry });
+  }
+
+  function handleSearch(e) {
+    e.preventDefault();
+    updateParams({ search: searchVal.trim() });
   }
 
   async function fetchCategories() {
@@ -28,30 +38,34 @@ export const EventFilterBar = memo(() => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const trimmedValue = debouncedValue.trim();
+    if (trimmedValue !== filters.search) {
+      updateParams({ search: trimmedValue });
+    }
+  }, [debouncedValue, filters.search]);
+
   const activeFormat = filters.format;
   const activeCategory = filters.category;
 
   const totalCategoryEvent = useMemo(() => {
-    console.log("calculation....");
     return categories.reduce((acc, currVal) => {
       acc += currVal.eventCount;
       return acc;
     }, 0);
   }, [categories]);
 
-  console.log(totalCategoryEvent);
-
   return (
     <div className="space-y-4">
       {/* Top Search & Primary Filters Row */}
       <div className="bg-white rounded-2xl border border-[#EBE8DF] p-3 shadow-subtle flex flex-col md:flex-row items-stretch md:items-center gap-3">
         {/* Search Input */}
-        <div className="relative flex-1">
-          <span className="text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 text-xs">
-            🔍
-          </span>
-          <form>
+        <div className="relative flex-1"> 
+          <Search className="text-stone-400 w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-xs"/>
+          <form onSubmit={handleSearch}>
             <input
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
               type="text"
               name="search"
               placeholder="Search by topic, category, artist, city, or venue..."
@@ -124,28 +138,6 @@ export const EventFilterBar = memo(() => {
           <span>🔄</span>
           <span>Reset</span>
         </button>
-      </div>
-
-      {/* Category Suggestions Banner */}
-      <div className="bg-orange-50/80 border border-orange-200/80 rounded-xl p-2.5 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 text-xs text-orange-950 font-medium flex-wrap">
-          <span className="text-[#E65100] font-bold inline-flex items-center gap-1">
-            <span>🏷️</span> Category match:
-          </span>
-          <span>Looking for events in these categories?</span>
-        </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <button
-            type="button"
-            className="px-2.5 py-1 rounded-lg bg-white hover:bg-orange-600 hover:text-white border border-orange-200 text-xs font-semibold text-[#E65100] transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <span>Technology & AI</span>
-            <span className="text-[10px] opacity-75 font-mono">
-              (14 events)
-            </span>
-            <span>→</span>
-          </button>
-        </div>
       </div>
 
       {/* Categories horizontal pill bar */}
