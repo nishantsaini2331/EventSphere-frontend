@@ -1,7 +1,7 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import { useEventFilters } from "@/hooks/useEventFilters";
 import api from "@/lib/axios";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { memo, use, useEffect, useMemo, useState } from "react";
 
 export const EventFilterBar = memo(() => {
@@ -12,6 +12,7 @@ export const EventFilterBar = memo(() => {
   const debouncedValue = useDebounce(searchVal, 350);
   console.log({ searchVal, debouncedValue });
 
+  const isDebouncing = searchVal.trim() !== filters.search.trim();
   function handleFormatChange(format) {
     updateParams({ format });
   }
@@ -23,6 +24,11 @@ export const EventFilterBar = memo(() => {
   function handleSearch(e) {
     e.preventDefault();
     updateParams({ search: searchVal.trim() });
+  }
+
+  function clearSearch(){
+    setSearchVal("");
+    updateParams({search : ""})
   }
 
   async function fetchCategories() {
@@ -60,8 +66,8 @@ export const EventFilterBar = memo(() => {
       {/* Top Search & Primary Filters Row */}
       <div className="bg-white rounded-2xl border border-[#EBE8DF] p-3 shadow-subtle flex flex-col md:flex-row items-stretch md:items-center gap-3">
         {/* Search Input */}
-        <div className="relative flex-1"> 
-          <Search className="text-stone-400 w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-xs"/>
+        <div className="relative flex-1">
+          <Search className="text-stone-400 w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" />
           <form onSubmit={handleSearch}>
             <input
               value={searchVal}
@@ -69,9 +75,26 @@ export const EventFilterBar = memo(() => {
               type="text"
               name="search"
               placeholder="Search by topic, category, artist, city, or venue..."
-              className="w-full pl-9 pr-9 py-2 text-sm rounded-xl bg-[#FAF9F5] border border-[#DDD9CE] focus:bg-white focus:border-[#E65100] focus:ring-2 focus:ring-[#E65100]/20 text-[#111] placeholder-stone-400 outline-none transition-all"
+              className={`w-full pl-9 py-2 text-sm rounded-xl bg-[#FAF9F5] border border-[#DDD9CE] focus:bg-white focus:border-[#E65100] focus:ring-2 focus:ring-[#E65100]/20 text-[#111] placeholder-stone-400 outline-none transition-all ${isDebouncing ? "pr-15" : "pr-9"}`}
             />
           </form>
+
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+            {isDebouncing && (
+              <span className="w-3.5 h-3.5 border-2 border-stone-300 border-t-[#E65100] rounded-full animate-spin" />
+            )}
+
+            {searchVal && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                aria-label="Clear search"
+                className="text-stone-400 hover:text-stone-700 transition-colors p-0.5 rounded cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* City Filter */}
