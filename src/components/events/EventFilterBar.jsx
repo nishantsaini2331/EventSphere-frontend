@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
+import { DayPicker } from "react-day-picker";
 
 const CITIES = [
   "All",
@@ -27,14 +28,17 @@ const CITIES = [
 ];
 
 export const EventFilterBar = memo(() => {
-  const { updateParams, filters, hasActiveFilters,resetFilters } = useEventFilters();
+  const { updateParams, filters, hasActiveFilters, resetFilters } =
+    useEventFilters();
   const [categories, setCategories] = useState([]);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [searchVal, setSearchVal] = useState(filters.search);
   const debouncedValue = useDebounce(searchVal, 350);
-  console.log({ searchVal, debouncedValue });
-
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [calendarTab, setCalendarTab] = useState("dates");
+  const [range, setRange] = useState({ from: undefined, to: undefined });
   const isDebouncing = searchVal.trim() !== filters.search.trim();
+  
   function handleFormatChange(format) {
     updateParams({ format });
   }
@@ -59,6 +63,11 @@ export const EventFilterBar = memo(() => {
   function handleSorting(e) {
     const [sort, order] = e.target.value.split("_");
     updateParams({ sort, order });
+  }
+
+  function handleRangeSelect(range, triggerDate) {
+    console.log({ range, triggerDate });
+    setRange(range)
   }
 
   async function fetchCategories() {
@@ -153,12 +162,138 @@ export const EventFilterBar = memo(() => {
         <div className="relative min-w-35">
           <button
             type="button"
+            onClick={() => setIsDatePickerOpen((prev) => !prev)}
             className=" w-full flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer select-none bg-[#FAF9F5] border-[#DDD9CE] text-stone-700 hover:bg-stone-100"
           >
             <Calendar className="text-stone-400 w-4 h-4 absolute  left-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs" />
             <span className="pl-8 pr-7">Filter by Date</span>
             <ChevronDown className="text-stone-400 w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs" />
           </button>
+
+          {isDatePickerOpen && (
+            <div className="fixed inset-x-3 top-20 sm:top-auto sm:inset-x-auto sm:absolute sm:right-0 sm:mt-2 z-50 bg-white rounded-3xl shadow-2xl border border-[#EBE8DF] p-4 sm:p-6 animate-in fade-in zoom-in-95 duration-150 max-h-[88vh] overflow-y-auto sm:max-h-none sm:overflow-visible w-auto sm:w-167.5 max-w-[calc(100vw-1.5rem)] sm:max-w-167.5">
+              {/* Top Segmented Control (Dates vs Flexible) */}
+              <div className="flex justify-center mb-4 sm:mb-5">
+                <div className="inline-flex p-1 bg-[#EBEAE5] rounded-full">
+                  <button
+                    type="button"
+                    onClick={() => setCalendarTab("dates")}
+                    className={`px-5 sm:px-7 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      calendarTab === "dates"
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-600 hover:text-stone-900"
+                    }`}
+                  >
+                    Dates
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCalendarTab("flexible")}
+                    className={`px-5 sm:px-7 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      calendarTab === "flexible"
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-600 hover:text-stone-900"
+                    }`}
+                  >
+                    Flexible
+                  </button>
+                </div>
+              </div>
+
+              {calendarTab === "dates" ? (
+                <>
+                  {/* Dual-Month Airbnb-style DayPicker */}
+                  <div className="flex justify-center overflow-x-auto py-1">
+                    <DayPicker
+                      mode="range"
+                      pagedNavigation
+                      numberOfMonths={2}
+                      navLayout="around"
+                      disabled={{ before: new Date() }}
+                      className="airbnb-day-picker"
+                      selected={range}
+                      onSelect={handleRangeSelect}
+                      formatters={{
+                        formatWeekdayName: (date) =>
+                          ["S", "M", "T", "W", "T", "F", "S"][date.getDay()],
+                      }}
+                    />
+                  </div>
+                </>
+              ) : (
+                /* Flexible Preset Selector Tab */
+                <div className="py-6 px-3 space-y-4 max-w-lg mx-auto">
+                  <div className="text-center">
+                    <h4 className="text-sm font-bold text-stone-900">
+                      When do you want to explore?
+                    </h4>
+                    <p className="text-xs text-stone-500 mt-1">
+                      Pick a quick timeframe for upcoming gatherings
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                    {[
+                      { id: "today", label: "Today", desc: "Happening today" },
+                      {
+                        id: "weekend",
+                        label: "This Weekend",
+                        desc: "Upcoming Sat & Sun",
+                      },
+                      {
+                        id: "week",
+                        label: "Next 7 Days",
+                        desc: "Next seven days",
+                      },
+                      {
+                        id: "month",
+                        label: "This Month",
+                        desc: "Through month-end",
+                      },
+                      {
+                        id: "nextMonth",
+                        label: "Next Month",
+                        desc: "All of next month",
+                      },
+                    ].map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className="p-3.5 rounded-2xl border border-[#E0DCCF] hover:border-stone-900 bg-[#FAF9F5] hover:bg-white text-left transition-all cursor-pointer group shadow-2xs hover:shadow-xs"
+                      >
+                        <div className="text-xs font-bold text-stone-800 group-hover:text-black">
+                          {p.label}
+                        </div>
+                        <div className="text-[11px] text-stone-400 mt-1">
+                          {p.desc}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Popover Footer */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 sm:pt-4 mt-3 border-t border-[#F2EFE8]">
+                <div className="text-xs text-stone-600 font-medium">
+                  1. Click on a start date
+                </div>
+                <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3">
+                  <button
+                    type="button"
+                    className="text-xs text-stone-600 hover:text-stone-900 font-semibold cursor-pointer underline underline-offset-4"
+                  >
+                    Clear dates
+                  </button>
+                  <button
+                    type="button"
+                    className="px-6 py-2 bg-[#222222] hover:bg-black text-white text-xs font-semibold rounded-full cursor-pointer transition-all shadow-sm active:scale-95 ml-auto sm:ml-0"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sorting Dropdown */}
