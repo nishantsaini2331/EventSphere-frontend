@@ -49,6 +49,11 @@ export const EventFilterBar = memo(() => {
     updateParams({ search: "" });
   }
 
+  function handleSorting(e) {
+    const [sort, order] = e.target.value.split("_");
+    updateParams({sort , order})
+  }
+
   async function fetchCategories() {
     setIsCategoriesLoading(true);
     try {
@@ -119,7 +124,7 @@ export const EventFilterBar = memo(() => {
         <div className="relative min-w-37.5">
           <MapPin className="text-stone-400 absolute w-4 h-4 left-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs" />
           <select
-          value={filters.city}
+            value={filters.city}
             name="city"
             onChange={(e) => handleChangeCity(e.target.value)}
             className="w-full pl-8 pr-7 py-2 text-xs font-medium rounded-xl bg-[#FAF9F5] border border-[#DDD9CE] focus:border-[#E65100] outline-none text-stone-800 appearance-none cursor-pointer"
@@ -153,10 +158,11 @@ export const EventFilterBar = memo(() => {
         <div className="relative min-w-35">
           <select
             name="sort"
+            onChange={handleSorting}
             className="w-full px-3 py-2 text-xs font-medium rounded-xl bg-[#FAF9F5] border border-[#DDD9CE] focus:border-[#E65100] outline-none text-stone-800 appearance-none cursor-pointer"
           >
-            <option value="startDate_asc">Earliest First</option>
-            <option value="startDate_desc">Latest First</option>
+            <option value="startDate_asc">Soonest first</option>
+            <option value="startDate_desc">Furthest out</option>
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
             <option value="title_asc">Title: A – Z</option>
