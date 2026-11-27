@@ -11,10 +11,10 @@ export function useEventFilters() {
       isPaid:
         isPaidParam === "true" ? true : isPaidParam === "false" ? false : "",
       category: searchParams.get("category") || "",
-      search : searchParams.get("search") || "",
-      city : searchParams.get("city") || "All",
-      sort : searchParams.get("sort") || "startDate",
-      order: searchParams.get("order") || "asc"
+      search: searchParams.get("search") || "",
+      city: searchParams.get("city") || "All",
+      sort: searchParams.get("sort") || "startDate",
+      order: searchParams.get("order") || "asc",
     };
   }, [searchParams]);
 
@@ -57,10 +57,28 @@ export function useEventFilters() {
     return params.toString();
   }
 
+  const hasActiveFilters = useMemo(() => {
+    return Boolean(
+      filters.search ||
+      filters.category ||
+      filters.city !== "All" ||
+      filters.isPaid !== "" ||
+      filters.order !== "asc" ||
+      filters.sort !== "startDate" ||
+      filters.format,
+    );
+  }, [filters]);
+
+  function resetFilters(){
+    setSearchParams(new URLSearchParams())
+  }
+  
   return {
     apiQueryString,
     updateParams,
     searchParams,
     filters,
+    hasActiveFilters,
+    resetFilters
   };
 }

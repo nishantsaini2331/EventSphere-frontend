@@ -1,7 +1,14 @@
 import { useDebounce } from "@/hooks/useDebounce";
 import { useEventFilters } from "@/hooks/useEventFilters";
 import api from "@/lib/axios";
-import { Calendar, ChevronDown, MapPin, Search, X } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  MapPin,
+  RotateCcw,
+  Search,
+  X,
+} from "lucide-react";
 import { memo, useEffect, useMemo, useState } from "react";
 
 const CITIES = [
@@ -20,7 +27,7 @@ const CITIES = [
 ];
 
 export const EventFilterBar = memo(() => {
-  const { updateParams, filters } = useEventFilters();
+  const { updateParams, filters, hasActiveFilters,resetFilters } = useEventFilters();
   const [categories, setCategories] = useState([]);
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
   const [searchVal, setSearchVal] = useState(filters.search);
@@ -51,7 +58,7 @@ export const EventFilterBar = memo(() => {
 
   function handleSorting(e) {
     const [sort, order] = e.target.value.split("_");
-    updateParams({sort , order})
+    updateParams({ sort, order });
   }
 
   async function fetchCategories() {
@@ -166,18 +173,22 @@ export const EventFilterBar = memo(() => {
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
             <option value="title_asc">Title: A – Z</option>
+            <option value="title_desc">Title: Z – A</option>
           </select>
           <ChevronDown className="text-stone-400 w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs" />
         </div>
 
         {/* Reset Filters CTA */}
-        <button
-          type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-xl transition-colors shrink-0 cursor-pointer"
-        >
-          <span>🔄</span>
-          <span>Reset</span>
-        </button>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-xl transition-colors shrink-0 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset</span>
+          </button>
+        )}
       </div>
 
       {/* Categories horizontal pill bar */}
